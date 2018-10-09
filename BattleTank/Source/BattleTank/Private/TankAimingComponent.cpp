@@ -4,6 +4,7 @@
 #include "TankBarrel.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/StaticMeshComponent.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
 
 
 
@@ -80,5 +81,5 @@ void UTankAimingComponent::MoveBarrelToward(FVector AimDirection)
 	auto AimAsRotator = AimDirection.Rotation();
 	auto DeltaRotator = AimAsRotator - BarrelRotator;
 
-	Barrel->ElevateBarrel(1); // TODO remove magic number
+	Barrel->ElevateBarrel(DeltaRotator.Pitch); // TODO remove magic number
 }

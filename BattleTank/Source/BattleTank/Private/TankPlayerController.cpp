@@ -23,6 +23,7 @@ void ATankPlayerController::BeginPlay()
 void ATankPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	AimTowardCrosshair();
 }
 
@@ -39,6 +40,7 @@ void ATankPlayerController::AimTowardCrosshair()
 	FVector HitLocation; // Out Parameter
 	if (GetSightRayHitLocation(HitLocation))
 	{
+		
 		GetControlledTank()->AimAt(HitLocation);
 	}
 }
