@@ -66,7 +66,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 		0.f,
 		ESuggestProjVelocityTraceOption::DoNotTrace,
 		FCollisionResponseParams::DefaultResponseParam,
-		TArray<AActor*>(), //TODO make sure it doesn't try to solve when crosshair is pointing at own barrel/tank (ignore self in calculation)
+		TArray<AActor*>(), 
 		true
 		))
 	{
