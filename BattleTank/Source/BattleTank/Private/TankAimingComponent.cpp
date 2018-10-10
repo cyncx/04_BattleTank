@@ -56,29 +56,25 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
 
 	if (UGameplayStatics::SuggestProjectileVelocity(
-		this, 
-		OutLaunchVelocity, 
-		StartLocation, 
-		HitLocation, 
-		LaunchSpeed, 
+		this,
+		OutLaunchVelocity,
+		StartLocation,
+		HitLocation,
+		LaunchSpeed,
 		false,
-		0,
-		0,
-		ESuggestProjVelocityTraceOption::DoNotTrace
+		0.f,
+		0.f,
+		ESuggestProjVelocityTraceOption::DoNotTrace,
+		FCollisionResponseParams::DefaultResponseParam,
+		TArray<AActor*>(), //TODO make sure it doesn't try to solve when crosshair is pointing at own barrel/tank (ignore self in calculation)
+		true
 		))
 	{
 		auto AimDirection = OutLaunchVelocity.GetSafeNormal();		
 		MoveBarrelToward(AimDirection);		
 		auto Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("%f: Aim solution found"), Time);
-	}
-	else
-	{
-		auto Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("%f: No aim solution found"), Time);
-	}
-
-	
+		
+	}	
 }
 
 void UTankAimingComponent::MoveBarrelToward(FVector AimDirection)
@@ -86,7 +82,7 @@ void UTankAimingComponent::MoveBarrelToward(FVector AimDirection)
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto AimAsRotator = AimDirection.Rotation();
 	auto DeltaRotator = AimAsRotator - BarrelRotator;
-
+	
 	Barrel->ElevateBarrel(DeltaRotator.Pitch); 
 	Turret->RotateTurret(DeltaRotator.Yaw);
 }
