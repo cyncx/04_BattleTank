@@ -29,7 +29,7 @@ void AProjectile::Tick(float DeltaTime)
 void AProjectile::LaunchProjectile(float Speed)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Boom"));
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Orange, TEXT("BOOM"), true);
+	
 	ProjectileMovement->SetVelocityInLocalSpace(FVector::ForwardVector * Speed);
 	ProjectileMovement->Activate();
 }
