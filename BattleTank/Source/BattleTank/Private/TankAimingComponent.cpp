@@ -31,7 +31,6 @@ void UTankAimingComponent::BeginPlay()
 	Super::BeginPlay();
 
 	LastFireTime = GetWorld()->GetTimeSeconds();
-	
 }
 
 
@@ -40,8 +39,10 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	TimeSinceFire = GetWorld()->GetTimeSeconds() - LastFireTime;
-	
-	if (TimeSinceFire < ReloadTimeInSeconds)
+	if (RoundsLeft <= 0) {
+		FiringStatus = EFiringStatus::OutOfAmmo;
+	}
+	else if (TimeSinceFire < ReloadTimeInSeconds)
 	{
 		FiringStatus = EFiringStatus::Reloading;
 	}
@@ -55,6 +56,8 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	}
 }
 
+EFiringStatus UTankAimingComponent::GetFiringStatus() const { return FiringStatus; }
+int UTankAimingComponent::GetRoundsLeft() const { return RoundsLeft; }
 
 void UTankAimingComponent::AimAt(FVector HitLocation)
 {
@@ -79,6 +82,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation)
 		auto Time = GetWorld()->GetTimeSeconds();
 		
 	}	
+	// TODO aim barrel at crosshair if no aim solution is found, or make so player has to manually compensate for drop
 }
 
 void UTankAimingComponent::MoveBarrelToward(FVector AimDirection)
@@ -89,7 +93,15 @@ void UTankAimingComponent::MoveBarrelToward(FVector AimDirection)
 	auto DeltaRotator = AimAsRotator - BarrelRotator;
 	
 	Barrel->ElevateBarrel(DeltaRotator.Pitch); 
-	Turret->RotateTurret(DeltaRotator.Yaw);
+	if (FMath::Abs(DeltaRotator.Yaw) < 180)
+	{
+		Turret->RotateTurret(DeltaRotator.Yaw);
+	}
+	else
+	{
+		Turret->RotateTurret(-DeltaRotator.Yaw);
+	}
+	
 }
 
 bool UTankAimingComponent::bIsBarrelMoving()
@@ -101,7 +113,7 @@ bool UTankAimingComponent::bIsBarrelMoving()
 
 void UTankAimingComponent::Fire()
 {	
-	if (FiringStatus != EFiringStatus::Reloading) {
+	if (FiringStatus != EFiringStatus::Reloading && FiringStatus != EFiringStatus::OutOfAmmo) {
 		if (!ensure(Barrel && ProjectileBlueprint)) { return; }
 		auto SpawnLocation = Barrel->GetSocketLocation(FName("Projectile"));
 		auto SpawnRotation = Barrel->GetSocketRotation(FName("Projectile"));
@@ -109,5 +121,8 @@ void UTankAimingComponent::Fire()
 
 		Projectile->LaunchProjectile(LaunchSpeed);
 		LastFireTime = GetWorld()->GetTimeSeconds();
-	}
+		RoundsLeft--;
+	}	
 }
+
+
