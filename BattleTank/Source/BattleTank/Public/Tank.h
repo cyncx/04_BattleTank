@@ -7,7 +7,6 @@
 #include "Tank.generated.h"
 
 class UTankAimingComponent;
-class UTankMovementComponent;
 class UTankBarrel;
 class AProjectile;
 
@@ -23,14 +22,13 @@ public:
 	void AimAt(FVector HitLocation);
 
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
+		
 	void Fire();
 
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	UTankAimingComponent* TankAimingComponent = nullptr;
-	UPROPERTY(BlueprintReadOnly)
-	UTankMovementComponent* TankMovementComponent = nullptr;
 
 
 private:
@@ -44,4 +42,5 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
 	float ReloadTimeInSeconds = 3;
 	double LastFireTime = 0;
+	virtual void BeginPlay() override;
 };
