@@ -79,5 +79,5 @@ private:
 	FVector AimDirection = FVector(0);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
-	int RoundsLeft = 10;
+	int32 RoundsLeft = 10;
 };
