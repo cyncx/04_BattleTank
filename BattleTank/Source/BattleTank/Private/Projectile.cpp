@@ -2,6 +2,7 @@
 
 #include "Projectile.h"
 #include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -38,8 +39,20 @@ void AProjectile::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor,
 {
 	LaunchBlast->Deactivate();
 	ImpactBlast->Activate();
+	ExplosionForce->FireImpulse();
+
+	SetRootComponent(ImpactBlast);
+	CollisionMesh->DestroyComponent();
+
+	FTimerHandle Timer;
+	GetWorld()->GetTimerManager().SetTimer(Timer, this, &AProjectile::OnTimerExpire, DestroyDelay, false);
+
 }
 
+void AProjectile::OnTimerExpire()
+{
+	Destroy();
+}
 // Called every frame
 void AProjectile::Tick(float DeltaTime)
 {
